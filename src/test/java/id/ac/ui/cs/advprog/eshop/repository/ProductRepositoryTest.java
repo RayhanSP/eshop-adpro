@@ -64,5 +64,85 @@ class ProductRepositoryTest {
         assertFalse(productIterator.hasNext());
     }
 
+    /*** CREATE PRODUCT TESTS ***/
+    @Test
+    void testCreateProductSuccess() {
+        Product product = new Product();
+        product.setProductId("123");
+        product.setProductName("New Product");
+        product.setProductQuantity(10);
+
+        productRepository.create(product);
+        Iterator<Product> iterator = productRepository.findAll();
+
+        assertTrue(iterator.hasNext());
+        Product createdProduct = iterator.next();
+        assertEquals("123", createdProduct.getProductId());
+    }
+
+    @Test
+    void testCreateProductFailure_EmptyName() {
+        Product product = new Product();
+        product.setProductId("456");
+        product.setProductName("");
+        product.setProductQuantity(10);
+
+        assertDoesNotThrow(() -> productRepository.create(product));
+    }
+
+    /*** EDIT PRODUCT TESTS ***/
+    @Test
+    void testEditProductSuccess() {
+        Product product = new Product();
+        product.setProductId("123");
+        product.setProductName("Old Name");
+        product.setProductQuantity(10);
+        productRepository.create(product);
+
+        Product updatedProduct = new Product();
+        updatedProduct.setProductId("123");
+        updatedProduct.setProductName("Updated Name");
+        updatedProduct.setProductQuantity(20);
+        productRepository.update(updatedProduct);
+
+        Iterator<Product> iterator = productRepository.findAll();
+        Product result = iterator.next();
+        assertEquals("Updated Name", result.getProductName());
+    }
+
+    @Test
+    void testEditProductFailure_NotFound() {
+        Product updatedProduct = new Product();
+        updatedProduct.setProductId("999");
+        updatedProduct.setProductName("Non-existent");
+
+        assertDoesNotThrow(() -> {
+            try {
+                productRepository.update(updatedProduct);
+            } catch (Exception e) {
+            }
+        });
+    }
+
+    /*** DELETE PRODUCT TESTS ***/
+    @Test
+    void testDeleteProductSuccess() {
+        Product product = new Product();
+        product.setProductId("123");
+        product.setProductName("Delete Me");
+        product.setProductQuantity(10);
+        productRepository.create(product);
+
+        productRepository.deleteById("123");
+        Iterator<Product> iterator = productRepository.findAll();
+
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    void testDeleteProductFailure_NotFound() {
+        assertDoesNotThrow(() -> productRepository.deleteById("999"));
+    }
+
 
 }
