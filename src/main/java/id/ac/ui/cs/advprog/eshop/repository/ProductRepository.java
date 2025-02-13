@@ -16,6 +16,18 @@ public class ProductRepository {
         return product;
     }
 
+    public Product update(Product updatedProduct) {
+        for (Product product : productData) {
+            if (product.getProductId().equals(updatedProduct.getProductId())) {
+                product.setProductName(updatedProduct.getProductName());
+                product.setProductQuantity(updatedProduct.getProductQuantity());
+                return product;
+            }
+        }
+        throw new RuntimeException("Product not found");
+    }
+
+
     public Iterator<Product> findAll() {
         return productData.iterator();
     }

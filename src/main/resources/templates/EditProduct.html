@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Create New Product</title>
+    <title>Edit Product</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           rel="stylesheet"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
@@ -11,23 +11,24 @@
 <body>
 
 <div class="container">
-    <h3>Create New Product</h3>
+    <h3>Edit Product</h3>
 
-    <form th:action="@{/product/create}" th:object="${product}" method="post">
-        <!-- Tambahkan input hidden untuk productId -->
+    <form th:action="@{/product/edit}" th:object="${product}" method="post">
         <input type="hidden" th:field="*{productId}">
 
         <div class="form-group">
             <label for="nameInput">Name</label>
-            <input th:field="*{productName}" type="text" class="form-control mb-4 col-4" id="nameInput" placeholder="Enter product name" required>
+            <input th:field="*{productName}" type="text" class="form-control mb-4 col-4"
+                   id="nameInput" placeholder="Enter product name" required>
         </div>
 
         <div class="form-group">
             <label for="quantityInput">Quantity</label>
-            <input th:field="*{productQuantity}" type="number" class="form-control mb-4 col-4" id="quantityInput" placeholder="Enter product quantity" required>
+            <input th:field="*{productQuantity}" type="number" class="form-control mb-4 col-4"
+                   id="quantityInput" placeholder="Enter product quantity" required>
         </div>
 
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-success">Save Changes</button>
         <a th:href="@{/product/list}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
