@@ -16,6 +16,15 @@ public class ProductRepository {
         return product;
     }
 
+    public void deleteById(String productId) {
+        if (productId == null || productId.isEmpty()) {
+            throw new IllegalArgumentException("Product ID cannot be null or empty");
+        }
+        productData.removeIf(product -> product.getProductId() != null && product.getProductId().equals(productId));
+    }
+
+
+
     public Iterator<Product> findAll() {
         return productData.iterator();
     }
