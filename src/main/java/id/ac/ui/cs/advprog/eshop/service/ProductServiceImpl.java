@@ -21,10 +21,21 @@ public class ProductServiceImpl implements ProductService {
         if (product.getProductId() == null || product.getProductId().isEmpty()) {
             product.setProductId(UUID.randomUUID().toString());
         }
-
         productRepository.create(product);
         return product;
     }
+
+
+    @Override
+    public void deleteById(String productId) {
+        if (productId == null || productId.isEmpty()) {
+            throw new IllegalArgumentException("Product ID cannot be null or empty");
+        }
+
+        productRepository.deleteById(productId);
+    }
+
+
 
     @Override
     public List<Product> findAll() {

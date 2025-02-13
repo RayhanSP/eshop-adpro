@@ -33,7 +33,6 @@ public class ProductController {
         return "redirect:list";
     }
 
-
     @GetMapping("/list")
     public String productListPage(Model model) {
         List<Product> allProducts = service.findAll();
@@ -61,6 +60,13 @@ public class ProductController {
     @PostMapping("/edit")
     public String editProductPost(@ModelAttribute Product product) {
         service.update(product);
+        return "redirect:/product/list";
+    }
+
+
+    @GetMapping("/delete/{id}")
+    public String deleteProduct(@PathVariable("id") String productId) {
+        service.deleteById(productId);
         return "redirect:/product/list";
     }
 
