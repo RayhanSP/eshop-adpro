@@ -14,8 +14,10 @@ jobs:
 
       - name: Install Koyeb CLI
         run: |
-          curl -sSL https://get.koyeb.app | bash
-          koyeb --version
+          curl -sSL https://github.com/koyeb/koyeb-cli/releases/latest/download/koyeb-linux-amd64 -o koyeb
+          chmod +x koyeb
+          sudo mv koyeb /usr/local/bin/
+      
 
       - name: Authenticate with Koyeb
         run: koyeb configure --token ${{ secrets.KOYEB_API_KEY }}
