@@ -1,6 +1,6 @@
 # Tutorial Modul Pemrograman Lanjut 2024/2025
 
-## Reflection 1 
+## Reflection 1
 Saya berusaha mengikuti prinsip clean code dengan memastikan nama variabel dan fungsi yang saya gunakan bermakna, sehingga kode bisa self-describing dan tidak memerlukan komentar tambahan. Selain itu, untuk menghindari null-exception, saya memvalidasi input, seperti yang saya terapkan pada fitur edit dan delete produk. Saya juga berusaha meningkatkan keamanan dengan memastikan penggunaan metode POST pada fitur delete, untuk mengurangi potensi celah. Fokus utama saya adalah menjaga kode tetap jelas dan aman, serta menghindari masalah yang bisa terjadi karena input yang tidak valid.
 
 ## Reflection 2
