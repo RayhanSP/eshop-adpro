@@ -16,7 +16,8 @@ jobs:
         run: |
           curl -sSL https://github.com/koyeb/koyeb-cli/releases/latest/download/koyeb-linux-amd64 -o koyeb
           chmod +x koyeb
-          sudo mv koyeb /usr/local/bin/
+          sudo mv koyeb /usr/local/bin/koyeb
+          koyeb --version
       
 
       - name: Authenticate with Koyeb
