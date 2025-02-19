@@ -9,6 +9,18 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to Koyeb using Docker
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Koyeb CLI
         run: |
-          docker run --rm -e KOYEB_API_KEY=${{ secrets.KOYEB_API_KEY }} koyeb/koyeb:latest service update my-service --git-redeploy
+          curl -fsSL https://github.com/koyeb/koyeb-cli/releases/latest/download/koyeb-linux-amd64 -o koyeb
+          chmod +x koyeb
+          sudo mv koyeb /usr/local/bin/koyeb
+          koyeb --version  # Verifikasi instalasi CLI
+
+      - name: Authenticate with Koyeb
+        run: koyeb configure --token ${{ secrets.KOYEB_API_KEY }}
+
+      - name: Deploy to Koyeb
+        run: koyeb service update my-service --git-redeploy
