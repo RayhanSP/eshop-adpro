@@ -1,0 +1,24 @@
+name: Deploy to Koyeb
+
+on:
+  push:
+    branches:
+      - "**"  # Ini akan memicu workflow di setiap push ke semua branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Koyeb CLI
+        run: |
+          curl -sSL https://get.koyeb.app | bash
+          koyeb --version
+
+      - name: Authenticate with Koyeb
+        run: koyeb configure --token ${{ secrets.KOYEB_API_KEY }}
+
+      - name: Deploy to Koyeb
+        run: koyeb service update my-service --git-redeploy
