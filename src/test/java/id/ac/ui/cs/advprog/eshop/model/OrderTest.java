@@ -33,10 +33,10 @@ class OrderTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             Order order = new Order(
-                    id: "13652556-012a-4c07-b546-54eb1396d79b",
+                    "13652556-012a-4c07-b546-54eb1396d79b",
                     this.products,
-                    orderTime: 1708560000L,
-                    author: "Safira Sudrajat"
+                    1708560000L,
+                    "Safira Sudrajat"
         );
         });
     }
@@ -44,10 +44,10 @@ class OrderTest {
     @Test
     void testCreateOrderDefaultStatus() {
         Order order = new Order(
-                id: "13652556-012a-4c07-b546-54eb1396d79b",
+                "13652556-012a-4c07-b546-54eb1396d79b",
                 this.products,
-                orderTime: 1708560000L,
-                author: "Safira Sudrajat"
+                1708560000L,
+                "Safira Sudrajat"
     );
 
         assertSame(this.products, order.getProducts());
@@ -68,11 +68,11 @@ class OrderTest {
     @Test
     void testCreateOrderSuccessStatus() {
         Order order = new Order(
-                id: "13652556-012a-4c07-b546-54eb1396d79b",
+                "13652556-012a-4c07-b546-54eb1396d79b",
                 this.products,
-                orderTime: 1708560000L,
-                author: "Safira Sudrajat",
-                status: "SUCCESS"
+                1708560000L,
+                "Safira Sudrajat",
+                "SUCCESS"
     );
 
         assertEquals("SUCCESS", order.getStatus());
@@ -82,11 +82,11 @@ class OrderTest {
     void testCreateOrderInvalidStatus() {
         assertThrows(IllegalArgumentException.class, () -> {
             Order order = new Order(
-                    id: "13652556-012a-4c07-b546-54eb1396d79b",
+                    "13652556-012a-4c07-b546-54eb1396d79b",
                     this.products,
-                    orderTime: 1708560000L,
-                    author: "Safira Sudrajat",
-                    status: "MEOW"
+                    1708560000L,
+                    "Safira Sudrajat",
+                    "MEOW"
         );
         });
     }
@@ -94,10 +94,10 @@ class OrderTest {
     @Test
     void testSetStatusToCancelled() {
         Order order = new Order(
-                id: "13652556-012a-4c07-b546-54eb1396d79b",
+                "13652556-012a-4c07-b546-54eb1396d79b",
                 this.products,
-                orderTime: 1708560000L,
-                author: "Safira Sudrajat"
+                1708560000L,
+                "Safira Sudrajat"
     );
 
         order.setStatus("CANCELLED");
@@ -108,10 +108,10 @@ class OrderTest {
     @Test
     void testSetStatusToInvalidStatus() {
         Order order = new Order(
-                id: "13652556-012a-4c07-b546-54eb1396d79b",
+                "13652556-012a-4c07-b546-54eb1396d79b",
                 this.products,
-                orderTime: 1708560000L,
-                author: "Safira Sudrajat"
+                1708560000L,
+                "Safira Sudrajat"
     );
 
         assertThrows(IllegalArgumentException.class, () -> order.setStatus("MEOW"));
