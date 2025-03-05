@@ -246,4 +246,82 @@ public class PaymentServiceImplTest {
         assertEquals(voucherTooManyDigits, payment.getPaymentData().get("voucherCode"));
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
+
+    @Test
+    void testAddPaymentByCashOnDeliveryValid() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        String address = "456 Elm Street";
+        String deliveryFee = "7500";
+
+        Payment payment = paymentServiceImpl.addPaymentByCashOnDelivery(order, address, deliveryFee);
+
+        assertNotNull(payment);
+        assertNotNull(payment.getId());
+        assertTrue(payment.getId().startsWith("PAY"));
+        assertEquals("Cash On Delivery", payment.getMethod());
+        assertEquals("PENDING", payment.getStatus());
+        assertEquals(address, payment.getPaymentData().get("address"));
+        assertEquals(deliveryFee, payment.getPaymentData().get("deliveryFee"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPaymentByCashOnDeliveryEmptyAddress() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        String address = "";
+        String deliveryFee = "7500";
+
+        Payment payment = paymentServiceImpl.addPaymentByCashOnDelivery(order, address, deliveryFee);
+
+        assertNotNull(payment);
+        assertEquals("REJECTED", payment.getStatus());
+        assertEquals(address, payment.getPaymentData().get("address"));
+        assertEquals(deliveryFee, payment.getPaymentData().get("deliveryFee"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPaymentByCashOnDeliveryNullAddress() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        String address = null;
+        String deliveryFee = "7500";
+
+        Payment payment = paymentServiceImpl.addPaymentByCashOnDelivery(order, address, deliveryFee);
+
+        assertNotNull(payment);
+        assertEquals("REJECTED", payment.getStatus());
+        assertNull(payment.getPaymentData().get("address"));
+        assertEquals(deliveryFee, payment.getPaymentData().get("deliveryFee"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPaymentByCashOnDeliveryEmptyDeliveryFee() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        String address = "456 Elm Street";
+        String deliveryFee = "";
+
+        Payment payment = paymentServiceImpl.addPaymentByCashOnDelivery(order, address, deliveryFee);
+
+        assertNotNull(payment);
+        assertEquals("REJECTED", payment.getStatus());
+        assertEquals(address, payment.getPaymentData().get("address"));
+        assertEquals(deliveryFee, payment.getPaymentData().get("deliveryFee"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPaymentByCashOnDeliveryNullDeliveryFee() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        String address = "456 Elm Street";
+        String deliveryFee = null;
+
+        Payment payment = paymentServiceImpl.addPaymentByCashOnDelivery(order, address, deliveryFee);
+
+        assertNotNull(payment);
+        assertEquals("REJECTED", payment.getStatus());
+        assertEquals(address, payment.getPaymentData().get("address"));
+        assertNull(payment.getPaymentData().get("deliveryFee"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
 }
