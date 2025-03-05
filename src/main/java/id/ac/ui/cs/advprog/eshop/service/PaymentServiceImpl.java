@@ -4,6 +4,7 @@ import id.ac.ui.cs.advprog.eshop.model.Order;
 import id.ac.ui.cs.advprog.eshop.model.Payment;
 import id.ac.ui.cs.advprog.eshop.repository.PaymentRepository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +58,38 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public List<Payment> getAllPayments() {
         return paymentRepository.findAll();
+    }
+
+    @Override
+    public Payment addPaymentByVoucher(Order order, String voucherCode) {
+        // Siapkan data pembayaran dengan voucher code
+        Map<String, String> paymentData = new HashMap<>();
+        paymentData.put("voucherCode", voucherCode);
+
+        String status;
+        // Validasi voucher code:
+        // - Panjang 16 karakter,
+        // - Dimulai dengan "ESHOP",
+        // - Mengandung tepat 8 digit numerik.
+        if (voucherCode != null
+                && voucherCode.length() == 16
+                && voucherCode.startsWith("ESHOP")) {
+            int digitCount = 0;
+            for (char c : voucherCode.toCharArray()) {
+                if (Character.isDigit(c)) {
+                    digitCount++;
+                }
+            }
+            status = (digitCount == 8) ? "SUCCESS" : "REJECTED";
+        } else {
+            status = "REJECTED";
+        }
+
+        String paymentId = generatePaymentId();
+        // Metode pembayaran disini adalah "Voucher" (atau bisa disesuaikan)
+        Payment payment = new Payment(paymentId, "Voucher", status, paymentData);
+        paymentRepository.save(payment);
+        return payment;
     }
 
     // Helper method to generate payment ID

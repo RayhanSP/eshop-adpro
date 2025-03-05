@@ -263,4 +263,40 @@ public class PaymentServiceTest {
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
+    @Test
+    void testAddPaymentByVoucherNullVoucher() {
+        // Uji branch ketika voucherCode null (tidak masuk ke if)
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        String nullVoucher = null;
+
+        Payment payment = ((PaymentServiceImpl) paymentService).addPaymentByVoucher(order, nullVoucher);
+
+        assertNotNull(payment);
+        assertNotNull(payment.getId());
+        assertTrue(payment.getId().startsWith("PAY"));
+        assertEquals("Voucher", payment.getMethod());
+        assertEquals("REJECTED", payment.getStatus());
+        // Karena voucherCode null, value di map adalah null
+        assertNull(payment.getPaymentData().get("voucherCode"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPaymentByVoucherTooManyDigits() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        // Voucher dengan 16 karakter, dimulai "ESHOP", tetapi mengandung 10 digit (bukan tepat 8 digit)
+        String voucherTooManyDigits = "ESHOP9876543210X";
+        // Periksa: "ESHOP" (5 char) + "9876543210" (10 digit) + "X" (1 char) = 16 karakter
+
+        Payment payment = ((PaymentServiceImpl) paymentService).addPaymentByVoucher(order, voucherTooManyDigits);
+
+        assertNotNull(payment);
+        assertNotNull(payment.getId());
+        assertTrue(payment.getId().startsWith("PAY"));
+        assertEquals("Voucher", payment.getMethod());
+        // Karena digit count bukan 8 (dalam voucher ini digit count = 10), status harus REJECTED
+        assertEquals("REJECTED", payment.getStatus());
+        assertEquals(voucherTooManyDigits, payment.getPaymentData().get("voucherCode"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
 }

@@ -19,4 +19,6 @@ public interface PaymentService {
 
     // Method to get all payments
     List<Payment> getAllPayments();
+
+    Payment addPaymentByVoucher(Order order, String voucherCode);
 }
