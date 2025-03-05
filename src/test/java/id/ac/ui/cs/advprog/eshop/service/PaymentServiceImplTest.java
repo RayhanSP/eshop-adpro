@@ -147,4 +147,68 @@ public class PaymentServiceImplTest {
         assertEquals("paymentId1", allPayments.get(0).getId());
         assertEquals("paymentId2", allPayments.get(1).getId());
     }
+
+    @Test
+    void testAddPaymentByVoucherValid() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        String validVoucher = "ESHOP1234ABC5678";
+
+        Payment payment = paymentServiceImpl.addPaymentByVoucher(order, validVoucher);
+
+        assertNotNull(payment);
+        assertNotNull(payment.getId());
+        assertTrue(payment.getId().startsWith("PAY"));
+        assertEquals("Voucher", payment.getMethod());
+        assertEquals("SUCCESS", payment.getStatus());
+        assertEquals(validVoucher, payment.getPaymentData().get("voucherCode"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPaymentByVoucherInvalidDigits() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        String invalidVoucher = "ESHOP1234ABCDEF";
+
+        Payment payment = paymentServiceImpl.addPaymentByVoucher(order, invalidVoucher);
+
+        assertNotNull(payment);
+        assertNotNull(payment.getId());
+        assertTrue(payment.getId().startsWith("PAY"));
+        assertEquals("Voucher", payment.getMethod());
+        assertEquals("REJECTED", payment.getStatus());
+        assertEquals(invalidVoucher, payment.getPaymentData().get("voucherCode"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPaymentByVoucherInvalidLength() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        String invalidVoucher = "ESHOP12345678";
+
+        Payment payment = paymentServiceImpl.addPaymentByVoucher(order, invalidVoucher);
+
+        assertNotNull(payment);
+        assertNotNull(payment.getId());
+        assertTrue(payment.getId().startsWith("PAY"));
+        assertEquals("Voucher", payment.getMethod());
+        assertEquals("REJECTED", payment.getStatus());
+        assertEquals(invalidVoucher, payment.getPaymentData().get("voucherCode"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPaymentByVoucherInvalidPrefix() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        String invalidVoucher = "SHOP123456789012";
+
+        Payment payment = paymentServiceImpl.addPaymentByVoucher(order, invalidVoucher);
+
+        assertNotNull(payment);
+        assertNotNull(payment.getId());
+        assertTrue(payment.getId().startsWith("PAY"));
+        assertEquals("Voucher", payment.getMethod());
+        assertEquals("REJECTED", payment.getStatus());
+        assertEquals(invalidVoucher, payment.getPaymentData().get("voucherCode"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
 }

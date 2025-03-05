@@ -195,5 +195,72 @@ public class PaymentServiceTest {
         verify(orderService, never()).updateStatus(anyString(), anyString());
     }
 
+    @Test
+    void testAddPaymentByVoucherValid() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        // Voucher valid: 16 karakter, diawali "ESHOP", dan memiliki tepat 8 digit numerik.
+        String validVoucher = "ESHOP1234ABC5678";
+
+        Payment payment = ((PaymentServiceImpl) paymentService).addPaymentByVoucher(order, validVoucher);
+
+        assertNotNull(payment);
+        assertNotNull(payment.getId());
+        assertTrue(payment.getId().startsWith("PAY"));
+        assertEquals("Voucher", payment.getMethod());
+        assertEquals("SUCCESS", payment.getStatus());
+        assertEquals(validVoucher, payment.getPaymentData().get("voucherCode"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPaymentByVoucherInvalidDigits() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        // Voucher valid format (16 karakter dan diawali "ESHOP") tetapi hanya memiliki 4 digit numerik.
+        String invalidVoucher = "ESHOP1234ABCDEF";
+
+        Payment payment = ((PaymentServiceImpl) paymentService).addPaymentByVoucher(order, invalidVoucher);
+
+        assertNotNull(payment);
+        assertNotNull(payment.getId());
+        assertTrue(payment.getId().startsWith("PAY"));
+        assertEquals("Voucher", payment.getMethod());
+        assertEquals("REJECTED", payment.getStatus());
+        assertEquals(invalidVoucher, payment.getPaymentData().get("voucherCode"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPaymentByVoucherInvalidLength() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        // Voucher dengan panjang tidak tepat (misalnya 14 karakter)
+        String invalidVoucher = "ESHOP12345678";
+
+        Payment payment = ((PaymentServiceImpl) paymentService).addPaymentByVoucher(order, invalidVoucher);
+
+        assertNotNull(payment);
+        assertNotNull(payment.getId());
+        assertTrue(payment.getId().startsWith("PAY"));
+        assertEquals("Voucher", payment.getMethod());
+        assertEquals("REJECTED", payment.getStatus());
+        assertEquals(invalidVoucher, payment.getPaymentData().get("voucherCode"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPaymentByVoucherInvalidPrefix() {
+        Order order = new Order("order1", products, 1708560000L, "Test Author");
+        // Voucher yang tidak diawali dengan "ESHOP"
+        String invalidVoucher = "SHOP123456789012";
+
+        Payment payment = ((PaymentServiceImpl) paymentService).addPaymentByVoucher(order, invalidVoucher);
+
+        assertNotNull(payment);
+        assertNotNull(payment.getId());
+        assertTrue(payment.getId().startsWith("PAY"));
+        assertEquals("Voucher", payment.getMethod());
+        assertEquals("REJECTED", payment.getStatus());
+        assertEquals(invalidVoucher, payment.getPaymentData().get("voucherCode"));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
 
 }
