@@ -1,12 +1,20 @@
 package id.ac.ui.cs.advprog.eshop.service;
 
+import id.ac.ui.cs.advprog.eshop.model.Order;
+import id.ac.ui.cs.advprog.eshop.model.Payment;
+import id.ac.ui.cs.advprog.eshop.model.Product;
+import id.ac.ui.cs.advprog.eshop.repository.PaymentRepository;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PaymentServiceImplTest {
@@ -18,27 +26,125 @@ public class PaymentServiceImplTest {
     private OrderService orderService;
 
     private PaymentServiceImpl paymentServiceImpl;
+    private List<Product> products;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        paymentServiceImpl = new PaymentServiceImpl(paymentRepository, orderService);
+        // Gunakan spy agar kita bisa stub method generatePaymentId()
+        paymentServiceImpl = spy(new PaymentServiceImpl(paymentRepository, orderService));
+
+        // Setup Products
+        products = new ArrayList<>();
+        Product product1 = new Product();
+        product1.setProductId("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        product1.setProductName("Sampo Cap Bambang");
+        product1.setProductQuantity(2);
+        Product product2 = new Product();
+        product2.setProductId("a2c62328-4a37-4664-83c7-32db8620155");
+        product2.setProductName("Sabun Cap Usep");
+        product2.setProductQuantity(1);
+        products.add(product1);
+        products.add(product2);
     }
 
     @Test
     void testAddPayment() {
-        Order order = new Order("orderId1", "PENDING");
+        // Arrange
+        Order order = new Order(
+                "13652556-012a-4c07-b546-54eb1396d79b",
+                this.products,
+                1708560000L,
+                "Safira Sudrajat"
+        );
         Map<String, String> paymentData = new HashMap<>();
         paymentData.put("key1", "value1");
 
-        Payment newPayment = new Payment("paymentId1", "Credit Card", "PENDING", paymentData);
-        doReturn(newPayment).when(paymentRepository).save(any(Payment.class));
+        // Stub generatePaymentId untuk mengembalikan "paymentId1"
+        doReturn("paymentId1").when(paymentServiceImpl).generatePaymentId();
 
+        // Karena save() adalah void, kita hanya verifikasi pemanggilan nanti
+
+        // Act
         Payment payment = paymentServiceImpl.addPayment(order, "Credit Card", paymentData);
+
+        // Assert
         assertNotNull(payment);
         assertEquals("paymentId1", payment.getId());
         assertEquals("Credit Card", payment.getMethod());
+        assertEquals("PENDING", payment.getStatus());
+        verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
-    // Same tests as PaymentService.java can be used here for other methods...
+    @Test
+    void testSetStatusSuccess() {
+        // Arrange
+        // Agar relasi antara Order dan Payment valid, gunakan id yang sama
+        Order order = new Order(
+                "13652556-012a-4c07-b546-54eb1396d79b",
+                this.products,
+                1708560000L,
+                "Safira Sudrajat"
+        );
+        Payment payment = new Payment("13652556-012a-4c07-b546-54eb1396d79b", "Credit Card", "PENDING", null);
+        doReturn(order).when(orderService).findById("13652556-012a-4c07-b546-54eb1396d79b");
+
+        // Act
+        Payment updatedPayment = paymentServiceImpl.setStatus(payment, "SUCCESS");
+
+        // Assert
+        assertEquals("SUCCESS", updatedPayment.getStatus());
+        assertEquals("SUCCESS", order.getStatus());
+    }
+
+    @Test
+    void testSetStatusRejected() {
+        // Arrange
+        Order order = new Order(
+                "13652556-012a-4c07-b546-54eb1396d79b",
+                this.products,
+                1708560000L,
+                "Safira Sudrajat"
+        );
+        Payment payment = new Payment("13652556-012a-4c07-b546-54eb1396d79b", "Credit Card", "PENDING", null);
+        doReturn(order).when(orderService).findById("13652556-012a-4c07-b546-54eb1396d79b");
+
+        // Act
+        Payment updatedPayment = paymentServiceImpl.setStatus(payment, "REJECTED");
+
+        // Assert
+        assertEquals("REJECTED", updatedPayment.getStatus());
+        assertEquals("FAILED", order.getStatus());
+    }
+
+    @Test
+    void testGetPayment() {
+        // Arrange
+        Payment payment = new Payment("paymentId1", "Credit Card", "PENDING", null);
+        doReturn(payment).when(paymentRepository).findById("paymentId1");
+
+        // Act
+        Payment fetchedPayment = paymentServiceImpl.getPayment("paymentId1");
+
+        // Assert
+        assertEquals("paymentId1", fetchedPayment.getId());
+        assertEquals("Credit Card", fetchedPayment.getMethod());
+    }
+
+    @Test
+    void testGetAllPayments() {
+        // Arrange
+        Payment payment1 = new Payment("paymentId1", "Credit Card", "PENDING", null);
+        Payment payment2 = new Payment("paymentId2", "Debit Card", "SUCCESS", null);
+        List<Payment> payments = List.of(payment1, payment2);
+        doReturn(payments).when(paymentRepository).findAll();
+
+        // Act
+        List<Payment> allPayments = paymentServiceImpl.getAllPayments();
+
+        // Assert
+        assertEquals(2, allPayments.size());
+        assertEquals("paymentId1", allPayments.get(0).getId());
+        assertEquals("paymentId2", allPayments.get(1).getId());
+    }
 }
