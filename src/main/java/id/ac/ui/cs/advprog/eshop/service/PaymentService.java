@@ -21,4 +21,6 @@ public interface PaymentService {
     List<Payment> getAllPayments();
 
     Payment addPaymentByVoucher(Order order, String voucherCode);
+
+    Payment addPaymentByCashOnDelivery(Order order, String address, String deliveryFee);
 }

@@ -92,6 +92,23 @@ public class PaymentServiceImpl implements PaymentService {
         return payment;
     }
 
+    @Override
+    public Payment addPaymentByCashOnDelivery(Order order, String address, String deliveryFee) {
+        Map<String, String> paymentData = new HashMap<>();
+        paymentData.put("address", address);
+        paymentData.put("deliveryFee", deliveryFee);
+
+        // Jika salah satu informasi kosong (null atau empty), status menjadi REJECTED.
+        boolean invalid = (address == null || address.trim().isEmpty())
+                || (deliveryFee == null || deliveryFee.trim().isEmpty());
+        String status = invalid ? "REJECTED" : "PENDING";
+
+        String paymentId = generatePaymentId();
+        Payment payment = new Payment(paymentId, "Cash On Delivery", status, paymentData);
+        paymentRepository.save(payment);
+        return payment;
+    }
+
     // Helper method to generate payment ID
     String generatePaymentId() {
         return "PAY" + System.currentTimeMillis(); // Example of generating a payment ID
