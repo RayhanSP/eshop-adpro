@@ -60,3 +60,26 @@ Dengan menerapkan prinsip SOLID, proyek saya menjadi lebih modular dan maintaina
 Jika prinsip SOLID tidak diterapkan, proyek dapat mengalami beberapa potensi masalah, seperti jika CarController masih menangani Product, maka setiap kali ada perubahan dalam Product, kita juga harus mengecek apakah ada dampaknya terhadap Car. Jika CarServiceImpl langsung menggunakan implementasi CarRepositoryImpl, maka saat testing kita harus selalu menggunakan data asli, tidak bisa menggunakan mock repository. Jika CarServiceImpl masih menggunakan new CarRepository(), maka jika ingin mengganti cara penyimpanan data ke database, kita harus mengubah semua tempat yang menggunakan CarRepository.
 
 </details>
+
+---
+
+## Module 4
+<details>
+  <summary>Reflection 1</summary>
+
+Pada tahap pengembangan dengan TDD, saya menemukan bahwa alur TDD memberikan feedback dini yang sangat berguna. Dengan menulis unit test sebelum implementasi, saya dapat mendeteksi masalah desain dan fungsionalitas sejak awal, sehingga membantu saya menghasilkan kode yang lebih modular, maintainable, dan terdokumentasi dengan baik. Pendekatan ini memaksa saya untuk berpikir secara detail tentang setiap fitur yang akan diimplementasikan, sehingga mengurangi kemungkinan terjadinya bug dan memudahkan refactoring.
+
+Namun, saya menyadari bahwa masih ada area yang perlu ditingkatkan, seperti cakupan edge case dan kompleksitas beberapa skenario yang belum teruji secara menyeluruh. Untuk iterasi selanjutnya, saya akan lebih fokus pada peningkatan cakupan pengujian, memastikan setiap branch dan kondisi ekstrem diuji dengan baik, serta mengintegrasikan pipeline CI/CD agar setiap perubahan kode dapat langsung diuji secara otomatis. Hal ini akan membantu memastikan bahwa seluruh fitur, termasuk sub-feature baru, terus berjalan sesuai harapan seiring dengan perkembangan proyek.
+
+</details>
+
+<details>
+  <summary>Reflection 2</summary>
+
+Dalam hal penerapan prinsip F.I.R.S.T., saya merasa bahwa unit test yang saya buat sudah cukup cepat, mandiri, dan repeatable, berkat penggunaan mock untuk mengisolasi dependensi. Tes yang saya tulis juga self-validating karena hasil pass/fail-nya langsung memberikan feedback tanpa perlu analisis manual, yang sangat berguna dalam proses debugging dan maintenance. Meskipun demikian, saya menyadari perlunya konsistensi dalam penggunaan data fixture dan stubbing nilai-nilai non-deterministik, agar pengujian selalu menghasilkan output yang konsisten di berbagai lingkungan.
+
+Ke depan, saya akan lebih disiplin dalam menulis tes secara tepat waktu (timely) bersama dengan pengembangan fitur baru dan terus memastikan setiap unit test memiliki asersi yang lengkap serta pesan kesalahan yang informatif. Pendekatan ini akan meningkatkan kualitas keseluruhan suite testing, sehingga tidak hanya mencapai cakupan 100% secara garis besar, tetapi juga mencakup semua kondisi edge-case dan menjamin bahwa setiap fitur berfungsi dengan baik di seluruh iterasi pengembangan.
+
+</details>
+
+
